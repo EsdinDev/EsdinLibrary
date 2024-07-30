@@ -1,0 +1,52 @@
+package org.esdindev.model;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class BookTest {
+
+    @Test
+    public void testGetTitle() {
+        Book book = new Book();
+        book.setTitle("The Lord of the Rings");
+        assertEquals("The Lord of the Rings", book.getTitle());
+    }
+
+    @Test
+    public void testGetAuthorName() {
+        Book book = new Book();
+        book.setAuthorName(Arrays.asList("J.R.R. Tolkien"));
+        assertEquals(Arrays.asList("J.R.R. Tolkien"), book.getAuthorName());
+    }
+
+    @Test
+    public void testGetPublishYear() {
+        Book book = new Book();
+        book.setPublishYear(Arrays.asList(1954));
+        assertEquals(Arrays.asList(1954), book.getPublishYear());
+    }
+
+    @Test
+    public void testGetAuthorAlternativeName() {
+        Book book = new Book();
+        book.setAuthorAlternativeName(Arrays.asList("John Ronald Reuel Tolkien"));
+        assertEquals(Arrays.asList("John Ronald Reuel Tolkien"), book.getAuthorAlternativeName());
+    }
+
+    @Test
+    public void testGetIsbn() {
+        Book book = new Book();
+        book.setIsbn(Arrays.asList("978-0261102385"));
+        assertEquals(Arrays.asList("978-0261102385"), book.getIsbn());
+    }
+
+    @Test
+    public void testGetKey() {
+        Book book = new Book();
+        book.setKey("/works/OL27448W");
+        assertEquals("/works/OL27448W", book.getKey());
+    }
+}
