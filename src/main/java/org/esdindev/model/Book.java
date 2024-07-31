@@ -153,4 +153,23 @@ public class Book {
     public void setKey(String key) {
         this.key = key;
     }
+
+    /**
+     * Returns a string representation of the Book object.
+     * The string includes the title, author names, publish years,
+     * alternative author names, ISBNs, and the key of the book.
+     *
+     * @return A string representation of the Book object.
+     */
+    @Override
+    public String toString() {
+        return "Book{" +
+                "title='" + title + '\'' +
+                ", authorName=" + authorName +
+                ", publishYear=" + publishYear +
+                ", authorAlternativeName=" + authorAlternativeName +
+                ", isbn=" + isbn +
+                ", key='" + key + '\'' +
+                '}';
+    }
 }

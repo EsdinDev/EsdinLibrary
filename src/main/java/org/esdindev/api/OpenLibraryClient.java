@@ -25,7 +25,7 @@ public class OpenLibraryClient {
      * @return A list of books that match the search query.
      * @throws IOException If an I/O error occurs when sending or receiving data.
      */
-    public List<Book> searchBooks(String query) throws IOException {
+    public SearchResult searchBooks(String query) throws IOException {
         String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
         URL url = new URL(API_URL + encodedQuery);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -34,7 +34,7 @@ public class OpenLibraryClient {
 
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
-            throw new RuntimeException("HttpResponseCode: " + responseCode);
+            throw new IOException("HttpResponseCode: " + responseCode);
         }
 
         Scanner scanner = new Scanner(url.openStream());
@@ -45,8 +45,10 @@ public class OpenLibraryClient {
         scanner.close();
 
         ObjectMapper mapper = new ObjectMapper();
-        SearchResult result = mapper.readValue(inline.toString(), SearchResult.class);
+        return mapper.readValue(inline.toString(), SearchResult.class);
+    }
 
-        return result.getDocs();
+    protected HttpURLConnection createConnection(URL url) throws IOException {
+        return (HttpURLConnection) url.openConnection();
     }
 }

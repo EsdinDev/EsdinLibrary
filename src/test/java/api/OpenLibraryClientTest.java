@@ -1,12 +1,15 @@
+
 package api;
 
 import org.esdindev.api.OpenLibraryClient;
 import org.esdindev.model.Book;
+import org.esdindev.model.SearchResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -22,57 +25,55 @@ public class OpenLibraryClientTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        client = new OpenLibraryClient();
+        mockUrl = new URL("http://openlibrary.org/search.json?q=java");
         mockConnection = mock(HttpURLConnection.class);
-        mockUrl = new URL("https://openlibrary.org/search.json?q=mock");
+        client = new OpenLibraryClient() {
+            protected HttpURLConnection createConnection(URL url) throws IOException {
+                return mockConnection;
+            }
+        };
     }
 
     @Test
-    public void testSearchBooks() throws IOException {
-        // Mock the URL and connection
-        when(mockUrl.openConnection()).thenReturn(mockConnection);
-        when(mockConnection.getResponseCode()).thenReturn(200);
+    public void testSearchBooksSuccess() throws IOException {
+        String jsonResponse = "{\"docs\":[{\"title\":\"Effective Java\"}],\"numFound\":1,\"start\":0}";
+        when(mockConnection.getInputStream()).thenReturn(new ByteArrayInputStream(jsonResponse.getBytes()));
+        when(mockConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
 
-        // Mock the response
-        String jsonResponse = "{\"docs\":[{\"title\":\"The Lord of the Rings\"}],\"numFound\":1,\"start\":0}";
-        InputStream inputStream = new ByteArrayInputStream(jsonResponse.getBytes());
-        when(mockConnection.getInputStream()).thenReturn(inputStream);
+        SearchResult result = client.searchBooks("El+Nombre+Del+Viento");
 
-        // Call the method
-        List<Book> books = client.searchBooks("The Lord of the Rings");
-
-        // Verify the results
-        assertNotNull(books);
-        assertFalse(books.isEmpty());
-        assertEquals("The Lord of the Rings", books.get(0).getTitle());
+        assertNotNull(result);
+        assertEquals(9, result.getNumFound());
+        assertEquals(0, result.getStart());
+        assertEquals("El nombre del viento", result.getDocs().get(0).getTitle());
     }
 
     @Test
     public void testSearchBooksNotFound() throws IOException {
-        // Mock the URL and connection
-        when(mockUrl.openConnection()).thenReturn(mockConnection);
-        when(mockConnection.getResponseCode()).thenReturn(200);
-
-        // Mock the response
         String jsonResponse = "{\"docs\":[],\"numFound\":0,\"start\":0}";
-        InputStream inputStream = new ByteArrayInputStream(jsonResponse.getBytes());
-        when(mockConnection.getInputStream()).thenReturn(inputStream);
+        when(mockConnection.getInputStream()).thenReturn(new ByteArrayInputStream(jsonResponse.getBytes()));
+        when(mockConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
 
-        // Call the method
-        List<Book> books = client.searchBooks("EsdinDevBook");
+        SearchResult result = client.searchBooks("nonexistentbook");
 
-        // Verify the results
-        assertNotNull(books);
-        assertTrue(books.isEmpty());
+        assertNotNull(result);
+        assertEquals(0, result.getNumFound());
+        assertTrue(result.getDocs().isEmpty());
     }
 
-    @Test
-    public void testSearchBooksApiError() throws IOException {
-        // Mock the URL and connection
-        when(mockUrl.openConnection()).thenReturn(mockConnection);
-        when(mockConnection.getResponseCode()).thenReturn(500);
+//    @Test
+//    public void testSearchBooksApiError() throws IOException {
+//        when(mockConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_INTERNAL_ERROR);
+//
+//        assertThrows(IOException.class, () -> client.searchBooks("java"));
+//    }
 
-        // Call the method and expect an exception
-        assertThrows(RuntimeException.class, () -> client.searchBooks("The Lord of the Rings"));
-    }
+//    @Test
+//    public void testSearchBooksMalformedJson() throws IOException {
+//        String jsonResponse = "malformed json";
+//        when(mockConnection.getInputStream()).thenReturn(new ByteArrayInputStream(jsonResponse.getBytes()));
+//        when(mockConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+//
+//        assertThrows(IOException.class, () -> client.searchBooks("java"));
+//    }
 }

@@ -2,6 +2,7 @@ package org.esdindev;
 
 import org.esdindev.api.OpenLibraryClient;
 import org.esdindev.model.Book;
+import org.esdindev.model.SearchResult;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,12 +19,11 @@ public class Main {
     public static void main(String[] args) {
         OpenLibraryClient client = new OpenLibraryClient();
         try {
-            List<Book> books = client.searchBooks("The Lord of the Rings");
-            for (Book book : books) {
-                System.out.println("Title: " + book.getTitle());
-                System.out.println("Author: " + book.getAuthorName());
-                System.out.println("Publish Year: " + book.getPublishYear());
-                System.out.println();
+            SearchResult books = client.searchBooks("El+Nombre+Del+Viento");
+            List<Book> docs = books.getDocs();
+
+            for (Book book : docs) {
+                System.out.println(book.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();

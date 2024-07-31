@@ -1,5 +1,6 @@
-package org.esdindev.model;
+package model;
 
+import org.esdindev.model.Book;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -48,5 +49,20 @@ public class BookTest {
         Book book = new Book();
         book.setKey("/works/OL27448W");
         assertEquals("/works/OL27448W", book.getKey());
+    }
+
+    @Test
+    public void testBookToString(){
+        Book book = new Book();
+        book.setTitle("The Lord of the Rings");
+        book.setAuthorName(Arrays.asList("J.R.R. Tolkien"));
+        book.setPublishYear(Arrays.asList(1954));
+        book.setAuthorAlternativeName(Arrays.asList("John Ronald Reuel Tolkien"));
+        book.setIsbn(Arrays.asList("978-0261102385"));
+        book.setKey("/works/OL27448W");
+
+        assertEquals("Book{title='The Lord of the Rings', authorName=[J.R.R. Tolkien], publishYear=[1954], " +
+                "authorAlternativeName=[John Ronald Reuel Tolkien], isbn=[978-0261102385], key='/works/OL27448W'}",
+                book.toString());
     }
 }
